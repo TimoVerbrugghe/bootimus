@@ -816,25 +816,22 @@ func (e *Extractor) cacheBootFiles(files *BootFiles, img *iso9660.Image, isoPath
 	}
 
 	if files.Distro == "windows" {
-		bcdDest := filepath.Join(bootFilesDir, "bcd")
-		if err := e.extractNamedFile(img, files.Kernel, bcdDest); err != nil {
-			return fmt.Errorf("failed to extract BCD: %w", err)
+		extractedDir := filepath.Join(bootFilesDir, "iso")
+		if err := os.MkdirAll(extractedDir, 0755); err != nil {
+			return fmt.Errorf("failed to create extracted ISO directory: %w", err)
 		}
-		files.Kernel = bcdDest
 
-		bootSdiDest := filepath.Join(bootFilesDir, "boot.sdi")
-		if err := e.extractNamedFile(img, files.Initrd, bootSdiDest); err != nil {
-			return fmt.Errorf("failed to extract boot.sdi: %w", err)
+		log.Printf("Extracting full Windows ISO contents to %s", extractedDir)
+		if err := e.extractISOContents(img, extractedDir); err != nil {
+			return fmt.Errorf("failed to extract full ISO contents: %w", err)
 		}
-		files.Initrd = bootSdiDest
 
-		bootWimDest := filepath.Join(bootFilesDir, "boot.wim")
-		if err := e.extractNamedFile(img, files.BootParams, bootWimDest); err != nil {
-			return fmt.Errorf("failed to extract boot.wim: %w", err)
-		}
-		files.BootParams = bootWimDest
+		files.ExtractedDir = extractedDir
+		files.Kernel = filepath.Join(extractedDir, strings.TrimPrefix(files.Kernel, "/"))
+		files.Initrd = filepath.Join(extractedDir, strings.TrimPrefix(files.Initrd, "/"))
+		files.BootParams = filepath.Join(extractedDir, strings.TrimPrefix(files.BootParams, "/"))
 
-		log.Printf("Extracted Windows boot files: BCD, boot.sdi, boot.wim to %s", bootFilesDir)
+		log.Printf("Windows ISO extraction complete")
 		return nil
 	}
 

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.70",
+  "version": "0.1.71",
   "profiles": [
     {
       "id": "ubuntu",
@@ -462,7 +462,7 @@
       "kernel_paths": ["/sources/boot.wim"],
       "initrd_paths": [],
       "squashfs_paths": [],
-      "default_boot_params": "rawbcd",
+      "default_boot_params": "",
       "auto_install_type": "autounattend",
       "boot_method": "kernel"
     },
@@ -474,7 +474,7 @@
       "kernel_paths": ["/sources/boot.wim"],
       "initrd_paths": [],
       "squashfs_paths": [],
-      "default_boot_params": "rawbcd",
+      "default_boot_params": "",
       "auto_install_type": "autounattend",
       "boot_method": "kernel"
     },
